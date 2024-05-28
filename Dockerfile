@@ -60,4 +60,4 @@ RUN source crazyfly/isse_ws/devel/setup.bash && cd /ros_ws && catkin_make
 ENTRYPOINT ["/ros_entrypoint.sh"]
 
 
-CMD source /crazyswarm/ros_ws/devel/setup.bash && source /ros_ws/devel/setup.bash && roslaunch isse_crazy crazyfly.launch semantix_port:=${semantix_port} cf_id:=8
+CMD source /crazyswarm/ros_ws/devel/setup.bash && source /ros_ws/devel/setup.bash && roslaunch isse_crazy crazyfly.launch semantix_port:=${semantix_port}

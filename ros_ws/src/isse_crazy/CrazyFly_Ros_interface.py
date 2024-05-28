@@ -25,10 +25,10 @@ from tf import TransformListener
 class CrazyFly_Ros_interface:
 
     def __init__(self):
-        self.copter = BasicSingleCopter("MyCrazyCopter")
+        self.copter = BasicSingleCopter(f"fly@{int(rospy.get_param('~semantix_port'))}")
         self.scale = 0.1
         self.transformListener = TransformListener()
-        self.name = f"CrazyFly#{int(rospy.get_param('~cf_id'))}@{int(rospy.get_param('~semantix_port'))}"
+        self.name = f"CrazyFly#{int(rospy.get_param('~semantix_port'))}"
         self.pub = rospy.Publisher("/robot", Marker, queue_size=1)
         self.br = tf.TransformBroadcaster()
 
