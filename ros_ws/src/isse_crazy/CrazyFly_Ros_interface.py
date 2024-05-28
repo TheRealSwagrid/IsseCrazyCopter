@@ -1,41 +1,44 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import math
 import os
 import socket
 import time
-from time import sleep
 
-import numpy as np
+# Ros imports
+import geometry_msgs
+import rospkg
 import rospy
+import numpy as np
 import tf
+import tf2_geometry_msgs
+import tf2_ros
+import threading
+
+# isse swarm imports
+from isse_basic_swarms.BasicSingleCopter import BasicSingleCopter
+from geometry_msgs.msg import Vector3, TransformStamped
+from isse_core import utils
+from isse_core.utils import TfRayCast
+from playsound import playsound
+
+# semantic imports
 from AbstractVirtualCapability import VirtualCapabilityServer
 from tf.transformations import quaternion_about_axis
 
-from CrazyFly import CrazyFly
+from IsseCrazyCopter import IsseCrazyCopter
 from visualization_msgs.msg import Marker
 from tf import TransformListener
-from pycrazyswarm.crazyflie import CrazyflieServer, Crazyflie
 
 
 class CrazyFly_Ros_interface:
 
     def __init__(self):
-        self.target = [0.0, 0.0, 0.0]
-        self.position = [0.0, 0.0, 0.0]
-        self.rotation = [0., 0., 0., 1.]
-        self.scale = .1
-        self.arming_status = False
-        self.id = int(rospy.get_param('~cf_id'))
+        self.copter = BasicSingleCopter()
+        self.scale = 0.1
         self.transformListener = TransformListener()
         self.name = f"CrazyFly#{int(rospy.get_param('~cf_id'))}@{int(rospy.get_param('~semantix_port'))}"
         self.pub = rospy.Publisher("/robot", Marker, queue_size=1)
         self.br = tf.TransformBroadcaster()
-        for crazyflie in rospy.get_param("/crazyflies"):
-            rospy.logwarn(crazyflie["id"])
-            rospy.logwarn(str(self.id) + "\n")
-            if int(crazyflie["id"]) == self.id:
-                self.cf = Crazyflie(self.id, crazyflie["initialPosition"], self.transformListener)
-                break
 
     def set_rotation(self, quaternion: list):
         self.rotation = quaternion
@@ -57,7 +60,8 @@ class CrazyFly_Ros_interface:
 
     def fly_to(self, p: list):
         # self.cf.setLEDColor(1., 1., 0.)
-        self.cf.goTo(p, 0, 5)
+        self.copter.set_target(np.array(p))
+
         timer = time.time()
         rospy.logerr(f"Flying to {p}")
         pos = self.get_position()
@@ -65,46 +69,27 @@ class CrazyFly_Ros_interface:
         while dist > 0.1:
             pos = self.get_position()
             dist = math.sqrt((p[0] - pos[0]) ** 2 + (p[1] - pos[1]) ** 2 + (p[2] - pos[2]) ** 2)
-            sleep(.01)
+            time.sleep(.01)
         rospy.logerr(f"Arrived at {p} after {time.time() - timer} seconds")
         # self.cf.setLEDColor(0., 1., 0.)
 
     def arm(self):
-        self.arming_status = True
-        # self.cf.setLEDColor(1., 1., 1.)
-        self.cf.takeoff(1.0, 3.0)
-        rospy.sleep(3)
-        sleep(3)
+        self.copter.start()
 
     def disarm(self):
-        self.arming_status = False
-        # self.cf.setLEDColor(1., 0., 1.)
-        self.cf.land(0., 3.0)
-        rospy.sleep(3)
-        sleep(3)
+        self.copter.stop()
 
     def get_position(self):
-        return self.cf.position().tolist()
+        pos = self.copter.get_position()
+        if pos is None:
+            return [0., 0., 0.]
+            raise ValueError("Copter isn't available")
+        else:
+            pos = list(pos)
+        return pos
 
     def get_arming_status(self):
-        return self.arming_status
-
-    def select_cf(self, cf_id: int):
-        for crazyflie in rospy.get_param("/crazyflies"):
-            rospy.logwarn(crazyflie["id"])
-            rospy.logwarn(str(self.id) + "\n")
-            if int(crazyflie["id"]) == self.id:
-                self.cf = Crazyflie(self.id, crazyflie["initialPosition"], self.transformListener)
-                break
-
-    def hover(self):
-        self.cf.takeoff(1.0, 3.0)
-        rospy.sleep(3)
-        self.cf.land(0., 3.0)
-        rospy.sleep(3)
-
-    def change_led(self, red, green, blue):
-        self.cf.setLEDColor(red / 255., green / 255., blue / 255.)
+        return self.copter.get_available()
 
     def publish_visual(self):
         # rospy.logwarn(f"Publishing {self.position}")
@@ -143,7 +128,7 @@ class CrazyFly_Ros_interface:
 
 
 if __name__ == '__main__':
-    rospy.init_node('rosnode', xmlrpc_port=int(os.environ["xmlrpc_port"]), tcpros_port=int(os.environ["tcpros_port"]))
+    rospy.init_node('rosnode')#, xmlrpc_port=int(os.environ["xmlrpc_port"]), tcpros_port=int(os.environ["tcpros_port"]))
     rate = rospy.Rate(30)
 
     rospy.logwarn("Starting CrazyFly ROS")
@@ -154,12 +139,11 @@ if __name__ == '__main__':
     server = VirtualCapabilityServer(int(rospy.get_param('~semantix_port')), socket.gethostbyname(socket.gethostname()))
 
     rospy.logwarn("starting isse_copter semanticplugandplay")
-    copter = CrazyFly(server)
+    copter = IsseCrazyCopter(server)
 
     copter.functionality["arm"] = drone.arm
     copter.functionality["disarm"] = drone.disarm
-    copter.functionality["setNeoPixelColor"] = drone.change_led
-    copter.functionality["get_arming"] = lambda: drone.arming_status
+    copter.functionality["get_arming"] = lambda: drone.get_arming_status()
 
     copter.functionality["set_pos"] = drone.fly_to
     copter.functionality["get_pos"] = drone.get_position
