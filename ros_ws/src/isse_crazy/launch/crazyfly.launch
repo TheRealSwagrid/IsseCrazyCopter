@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="cf_id" default="2"/>
+	<arg name="semantix_port" default="7500"/>
+    <rosparam file="$(find isse_crazy)/config/crazyflieTypes.yaml" />
+	<rosparam file="$(find isse_crazy)/config/crazyflies.yaml" />
+
+
+    <include file="$(find vrpn_client_ros)/launch/sample.launch">
+    	<arg name="server" value="172.20.37.251" />
+  	</include>
+
+    <node pkg="isse_crazy" type="CrazyFly_Ros_interface.py" name="semantic_crazyflie_$(arg cf_id)" >
+  		<param name="cf_id" value="$(arg cf_id)"/>
+		<param name="semantix_port" value="$(arg semantix_port)"/>
+    </node>
+
+	<node pkg="crazyswarm" type="crazyswarm_server" name="crazyswarm_server" output="screen" >
+		<rosparam>
+# LUCA Logging configuration (Use enable_logging to actually enable logging)
+#genericLogTopics: ["log1"]
+#genericLogTopicFrequencies: [10]
+#genericLogTopic_log1_Variables: ["stateEstimate.x", "ctrltarget.x"]
+# firmware parameters for all drones (use crazyflieTypes.yaml to set per type, or
+# allCrazyflies.yaml to set per drone)
+firmwareParams:
+    commander:
+        enHighLevel: 1
+    stabilizer:
+        estimator: 2
+        controller: 1
+    ring:
+        effect: 7
+        solidBlue: 120
+        solidGreen: 120
+        solidRed: 0
+        headlightEnable: 0
+    locSrv:
+        extPosStdDev: 1e-3
+        extQuatStdDev: 0.5e-1
+    kalman:
+        resetEstimation: 1
+# tracking
+motion_capture_type: "vicon" # one of none,vicon,optitrack,optitrack_closed_source,qualisys,vrpn
+object_tracking_type: "libobjecttracker" # one of motionCapture,libobjecttracker
+send_position_only: True # set to False to send position+orientation; set to True to send position only
+motion_capture_host_name: "172.20.37.251"
+# motion_capture_interface_ip: "" # optional for optitrack with multiple interfaces
+save_point_clouds: "/dev/null" # set to a valid path to log mocap point cloud binary file.
+print_latency: False
+write_csvs: False
+force_no_cache: False
+enable_parameters: True
+enable_logging: True
+enable_logging_pose: True
+</rosparam>
+	</node>
+
+</launch>

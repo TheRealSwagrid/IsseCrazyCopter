@@ -35,7 +35,7 @@ RUN echo -e "SUBSYSTEM==\"usb\", ATTRS{idVendor}==\"0483\", ATTRS{idProduct}==\"
 # Build CrazyFly 
 COPY /ros_ws /ros_ws
 COPY AbstractVirtualCapability.py ros_ws/src/isse_crazy
-COPY CrazyFly.py ros_ws/src/isse_crazy
+COPY IsseCrazyCopter.py ros_ws/src/isse_crazy
 
 RUN source crazyswarm/ros_ws/devel/setup.bash && cd /ros_ws && catkin_make
 
