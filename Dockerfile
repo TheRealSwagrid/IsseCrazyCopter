@@ -38,8 +38,8 @@ RUN echo -e "SUBSYSTEM==\"usb\", ATTRS{idVendor}==\"0483\", ATTRS{idProduct}==\"
 
 COPY /crazyfly /crazyfly
 COPY /crazyswarm /crazyswarm
-RUN source crazyswarm/ros_ws/devel/setup.bash && cd crazyswarm/ros_ws/src/crazyswarm/scripts/pycrazyswarm/cfsim && make
-RUN source crazyswarm/ros_ws/devel/setup.bash && cd crazyswarm/ros_ws && catkin_make -DCMAKE_BUILD_TYPE=RelWithDebInfo
+RUN source /opt/ros/noetic/setup.bash  && cd crazyswarm/ros_ws/src/crazyswarm/scripts/pycrazyswarm/cfsim && make
+RUN source /opt/ros/noetic/setup.bash && cd crazyswarm/ros_ws && catkin_make -DCMAKE_BUILD_TYPE=RelWithDebInfo
 ENV PYTHONPATH=$PYTHONPATH:/crazyswarm/ros_ws/src/crazyswarm/scripts
 
 RUN source /opt/ros/noetic/setup.bash && source crazyswarm/ros_ws/devel/setup.bash && cd crazyfly/isse_ws && catkin_make -DCATKIN_BLACKLIST_PACKAGES="rviz_isse_panels"
