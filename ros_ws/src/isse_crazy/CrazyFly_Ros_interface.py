@@ -25,7 +25,7 @@ from tf import TransformListener
 class CrazyFly_Ros_interface:
 
     def __init__(self):
-        self.copter = BasicSingleCopter()
+        self.copter = BasicSingleCopter("MyCrazyCopter")
         self.scale = 0.1
         self.transformListener = TransformListener()
         self.name = f"CrazyFly#{int(rospy.get_param('~cf_id'))}@{int(rospy.get_param('~semantix_port'))}"
