@@ -27,6 +27,7 @@ class CrazyFly_Ros_interface:
     def __init__(self):
         self.copter = BasicSingleCopter(f"fly@{int(os.environ['semantix_port'])}") #{int(rospy.get_param('~semantix_port'))}")
         self.scale = 0.1
+        self.rotation = [0., 0., 0., 1.]
         self.transformListener = TransformListener()
         self.name = f"CrazyFly#{int(rospy.get_param('~semantix_port'))}"
         self.pub = rospy.Publisher("/robot", Marker, queue_size=1)
