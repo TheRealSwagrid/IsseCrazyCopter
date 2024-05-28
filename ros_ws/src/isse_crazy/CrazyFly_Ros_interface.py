@@ -121,10 +121,8 @@ class CrazyFly_Ros_interface:
 
 if __name__ == '__main__':
     rate = rospy.Rate(30)
-
-    rospy.logwarn("Starting CrazyFly ROS")
     drone = CrazyFly_Ros_interface()
-
+    rospy.logwarn("Starting CrazyFly ROS")
     rospy.logwarn("Starting server")
 
     server = VirtualCapabilityServer(int(rospy.get_param('~semantix_port')), socket.gethostbyname(socket.gethostname()))
