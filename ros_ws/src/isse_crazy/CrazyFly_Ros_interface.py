@@ -5,21 +5,13 @@ import socket
 import time
 
 # Ros imports
-import geometry_msgs
-import rospkg
 import rospy
 import numpy as np
 import tf
-import tf2_geometry_msgs
-import tf2_ros
-import threading
+
 
 # isse swarm imports
 from isse_basic_swarms.BasicSingleCopter import BasicSingleCopter
-from geometry_msgs.msg import Vector3, TransformStamped
-from isse_core import utils
-from isse_core.utils import TfRayCast
-from playsound import playsound
 
 # semantic imports
 from AbstractVirtualCapability import VirtualCapabilityServer

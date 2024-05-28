@@ -19,7 +19,7 @@ RUN sudo apt-get update
 RUN apt-get update && apt-get install -y python-is-python3 python3-pip git iputils-ping
 # CrazySwarm dependencies
 RUN apt-get update && apt-get install -y python3-rosinstall python3-rosinstall-generator python3-wstool build-essential ros-noetic-vrpn-client-ros swig lib${CSW_PYTHON}-dev ${CSW_PYTHON}-pip
-RUN apt-get update && apt-get install -y ros-noetic-tf ros-noetic-tf-conversions libpcl-dev libusb-1.0-0-dev portaudio19-dev
+RUN apt-get update && apt-get install -y ros-noetic-tf ros-noetic-tf-conversions libpcl-dev libusb-1.0-0-dev portaudio19-dev #ros-noetic-rviz
 
 RUN ${CSW_PYTHON} -m pip install pytest numpy=="1.24.0" PyYAML scipy pyaudio playsound
 RUN rosdep update
@@ -40,7 +40,7 @@ RUN source crazyswarm/ros_ws/devel/setup.bash && cd crazyswarm/ros_ws/src/crazys
 RUN source crazyswarm/ros_ws/devel/setup.bash && cd crazyswarm/ros_ws && catkin_make -DCMAKE_BUILD_TYPE=RelWithDebInfo
 ENV PYTHONPATH=$PYTHONPATH:/crazyswarm/ros_ws/src/crazyswarm/scripts
 
-RUN source /opt/ros/noetic/setup.bash && source crazyswarm/ros_ws/devel/setup.bash && cd crazyfly/isse_ws && catkin_make
+RUN source /opt/ros/noetic/setup.bash && source crazyswarm/ros_ws/devel/setup.bash && cd crazyfly/isse_ws && catkin_make -DCATKIN_BLACKLIST_PACKAGES="rviz_isse_panels"
 
 RUN echo "export PYTHONPATH=\${PYTHONPATH}:crazyswarm/ros_ws/src/crazyswarm/scripts" >> crazyfly/isse_ws/devel/setup.bash
 RUN echo "export PYTHONPATH=\${PYTHONPATH}:crazyswarm/ros_ws/src/crazyswarm/scripts" >> crazyfly/isse_ws/devel/setup.sh
