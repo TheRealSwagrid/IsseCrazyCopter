@@ -22,10 +22,6 @@
         <arg name="use_transfer_ring" value="false" />
    </include>
 
-    <include file="$(find vrpn_client_ros)/launch/sample.launch">
-    	<arg name="server" value="172.20.37.251" />
-  	</include>
-
     <node pkg="isse_crazy" type="CrazyFly_Ros_interface.py" name="semantic_crazyflie_$(arg semantix_port)" >
 		<param name="semantix_port" value="$(arg semantix_port)"/>
     </node>
