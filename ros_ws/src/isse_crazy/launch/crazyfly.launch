@@ -6,22 +6,6 @@
   	<!-- [x1, y1, z1, x2, y2, z2] -->
     <arg name="clipping_box" value="[2.539, 2.714, 0.000, -2.461, -1.178, 3.000]"/>
 
-   <rosparam ns="crazyswarm_server">
-          genericLogTopics: ["pm", "lala"]
-          genericLogTopicFrequencies: [1, 1]
-          genericLogTopic_pm_Variables: ["pm.vbat", "pm.chargeCurrent", "pm.state"]
-          genericLogTopic_lala_Variables: ["stateEstimate.yaw"]
-          enable_logging: True
-   </rosparam>
-
-   <include file="$(find isse_core)/launch/isse_core.launch">
-        <!--<arg name="rviz_display_config" value="$(find combo_demo_2_0)/launch/settings.rviz" />-->
-   </include>
-
-   <include file="$(find isse_pad_mgmt)/launch/pad_manager.launch">
-        <arg name="use_transfer_ring" value="false" />
-   </include>
-
     <node pkg="isse_crazy" type="CrazyFly_Ros_interface.py" name="semantic_crazyflie_$(arg semantix_port)" >
 		<param name="semantix_port" value="$(arg semantix_port)"/>
     </node>
