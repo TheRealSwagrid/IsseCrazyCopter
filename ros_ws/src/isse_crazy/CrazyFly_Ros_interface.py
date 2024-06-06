@@ -90,7 +90,7 @@ class CrazyFly_Ros_interface:
     def publish_visual(self):
         # rospy.logwarn(f"Publishing {self.position}")
         marker = Marker()
-        marker.id = int(rospy.get_param('~semantix_port'))
+        marker.id = "cf_id" + str(self.__hash__())
         marker.header.frame_id = "world"
         marker.header.stamp = rospy.Time.now()
         marker.ns = f"crazyfly"
