@@ -25,7 +25,10 @@ from tf import TransformListener
 class CrazyFly_Ros_interface:
 
     def __init__(self):
-        self.copter = BasicSingleCopter(f"fly@{int(os.environ['semantix_port'])}") #{int(rospy.get_param('~semantix_port'))}")
+        try:
+            self.copter = BasicSingleCopter(f"fly@{int(os.environ['semantix_port'])}") #{int(rospy.get_param('~semantix_port'))}")
+        except KeyError as e:
+            self.copter = BasicSingleCopter(f"fly@not_provided_in_os") #{int(rospy.get_param('~semantix_port'))}")
         self.scale = 0.1
         self.rotation = [0., 0., 0., 1.]
         self.transformListener = TransformListener()
